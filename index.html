@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danurry</title>
+    <meta name="description" content="Welcome to Danurry's bio">
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            min-height: 100vh;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        #bg-video, #bg-img {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .bg-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 1;
+        }
+
+        .page {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 16px 60px;
+        }
+
+        .page-card {
+            width: 100%;
+            max-width: 560px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 36px 28px 32px;
+            border-radius: 28px;
+            background: rgba(10, 10, 20, 0.45);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+
+        .profile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .bio-location {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.88rem;
+            color: rgba(255,255,255,0.7);
+            text-align: center;
+            line-height: 1.55;
+        }
+        .bio-location svg {
+            flex-shrink: 0;
+            color: #4fc3f7;
+        }
+
+        .avatar {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2.5px solid rgba(79,195,247,0.5);
+            box-shadow: 0 0 24px rgba(79,195,247,0.25);
+            margin-bottom: 14px;
+        }
+
+        .username {
+            font-size: 1.65rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 0.01em;
+            margin-bottom: 10px;
+        }
+
+        .bio {
+            font-size: 0.88rem;
+            color: rgba(255,255,255,0.7);
+            text-align: center;
+            line-height: 1.55;
+            max-width: 360px;
+        }
+
+        .links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.12);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.97rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.22s ease, transform 0.18s ease, border-color 0.22s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn:hover {
+            background: rgba(255,255,255,0.14);
+            border-color: rgba(255,255,255,0.25);
+            transform: translateY(-2px);
+        }
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1.25rem;
+        }
+        .btn-label { flex: 1; text-align: left; font-weight: 500; }
+        .btn-arrow {
+            color: rgba(255,255,255,0.45);
+            font-size: 1.1rem;
+            margin-left: auto;
+        }
+
+        .icon-dc   { background: rgba(88,101,242,0.2); color: #7289da; }
+        .icon-tg   { background: rgba(42,171,238,0.2); color: #2aabee; }
+        .icon-boosty { background: rgba(255,100,0,0.18); color: #ff6400; }
+
+        .player-block {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.12);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            margin-top: 19px;
+        }
+        .player-top-row {
+            display: contents;
+        }
+        .player-info-col {
+            flex: 1;
+            min-width: 0;
+        }
+        .player-cover {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: #222;
+        }
+        .player-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .player-artist {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.55);
+            margin-top: 2px;
+        }
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .player-controls button {
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            transition: opacity 0.15s;
+        }
+        .player-controls button:hover { opacity: 0.7; }
+        .play-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .progress-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 2px;
+        }
+
+        .progress-wrap--mobile {
+            display: none;
+        }
+        .progress-bar {
+            flex: 1;
+            height: 3px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 3px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #4fc3f7;
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.5s linear;
+        }
+        .time-label {
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.45);
+            white-space: nowrap;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 20px;
+            background: rgba(10, 10, 20, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.75rem;
+            color: #d4d4d4;
+            pointer-events: none;
+            user-select: none;
+        }
+        .footer .heart { color: #4fc3f7; }
+
+        @media (min-width: 600px) {
+            .page-card {
+                max-width: 780px;
+                padding: 44px 48px 40px;
+            }
+            .avatar { width: 120px; height: 120px; }
+            .username { font-size: 1.8rem; }
+            .bio { font-size: 0.92rem; max-width: 420px; }
+            .links-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+                width: 100%;
+            }
+            .links-grid .btn { max-width: 100%; }
+        }
+
+        @media (max-width: 599px) {
+            .page {
+                padding: 20px 16px 0;
+                justify-content: center;
+            }
+            .page-card {
+                max-width: 100%;
+                width: 100%;
+                padding: 24px 16px 20px;
+                border-radius: 22px;
+            }
+            .profile { margin-bottom: 16px; }
+            .avatar {
+                width: 90px;
+                height: 90px;
+                margin-bottom: 10px;
+            }
+            .username {
+                font-size: 1.5rem;
+                margin-bottom: 6px;
+            }
+            .links { gap: 12px; }
+            .links-grid {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+            .btn {
+                max-width: 100%;
+                width: 100%;
+                padding: 13px 14px;
+                border-radius: 14px;
+                font-size: 0.94rem;
+            }
+            .player-block {
+                flex-direction: column;
+                align-items: stretch;
+                margin-top: 18px;
+                padding: 14px 14px 12px;
+            }
+            .player-top-row {
+                display: flex;
+                align-items: center;
+                flex-wrap: nowrap;
+                gap: 10px 12px;
+                margin-bottom: 0;
+            }
+            .player-info-col {
+                flex: 1;
+                min-width: 0;
+            }
+            .progress-wrap--desktop {
+                display: none;
+            }
+            .progress-wrap--mobile {
+                display: flex;
+                margin-top: 4px;
+            }
+            .player-cover {
+                width: 48px;
+                height: 48px;
+                flex-shrink: 0;
+            }
+            .player-title { font-size: 0.84rem; }
+            .player-artist { font-size: 0.73rem; }
+            .player-controls { gap: 6px; }
+            .player-controls button {
+                padding: 6px;
+                min-width: 36px;
+                min-height: 36px;
+                justify-content: center;
+            }
+            .progress-bar { height: 4px; }
+            .btn-tg { order: 1; }
+            .btn-dc { order: 2; }
+            .footer {
+                position: static;
+                bottom: auto;
+                right: auto;
+                margin-top: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <video id="bg-video" autoplay muted loop playsinline poster="assets/background.png">
+        <source src="assets/background.mp4" type="video/mp4">
+    </video>
+    <img id="bg-img" src="assets/background.png" alt="" style="display:none;">
+    <div class="bg-overlay"></div>
+
+    <div class="page">
+    <div class="page-card">
+
+        <div class="profile">
+            <img src="assets/avatar.png" alt="Danurry" class="avatar">
+            <div class="username">Danurry</div>
+            <div class="bio-location">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                </svg>
+                Donetsk, Russia
+            </div>
+        </div>
+
+        <div class="links">
+            <a href="https://discord.gg/gxXEdZ333W" class="btn" target="_blank" rel="noopener noreferrer">
+                <div class="btn-icon" style="background:none;">
+                    <img src="assets/server.png" alt="server" style="width:55px;height:55px;object-fit:contain;display:block;border-radius:10px;">
+                </div>
+                <span class="btn-label">CloudyLand - Server Minecraft</span>
+                <span class="btn-arrow">→</span>
+            </a>
+
+            <a href="https://boosty.to/danurry" class="btn" target="_blank" rel="noopener noreferrer">
+                <div class="btn-icon icon-boosty">
+                    <img src="https://cdn.simpleicons.org/boosty/ff6400" width="22" height="22" alt="Boosty">
+                </div>
+                <span class="btn-label">Boosty</span>
+                <span class="btn-arrow">→</span>
+            </a>
+
+            <div class="links-grid">
+                <a href="https://discordapp.com/users/1508572979607503049" class="btn btn-dc" target="_blank" rel="noopener noreferrer">
+                    <div class="btn-icon icon-dc">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+                        </svg>
+                    </div>
+                    <span class="btn-label">Discord</span>
+                    <span class="btn-arrow">→</span>
+                </a>
+
+                <a href="https://t.me/Danurry" class="btn btn-tg" target="_blank" rel="noopener noreferrer">
+                    <div class="btn-icon icon-tg">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                        </svg>
+                    </div>
+                    <span class="btn-label">Telegram</span>
+                    <span class="btn-arrow">→</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="player-block">
+            <div class="player-top-row">
+                <img class="player-cover" id="player-cover" src="" alt="cover" onerror="this.style.background='#1a1a2e'">
+                <div class="player-info-col" id="player-info-wrap">
+                    <div class="player-title" id="player-title">Загрузка трека...</div>
+                    <div class="player-artist" id="player-artist"></div>
+                    <div class="progress-wrap progress-wrap--desktop" id="progress-wrap-desktop">
+                        <span class="time-label" id="time-cur">0:00</span>
+                        <div class="progress-bar" id="progress-bar" onclick="seekTrack(event)">
+                            <div class="progress-fill" id="progress-fill"></div>
+                        </div>
+                        <span class="time-label" id="time-dur">0:00</span>
+                    </div>
+                </div>
+                <div class="player-controls" id="player-controls">
+                    <button onclick="prevTrack()" title="Назад">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="white" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="1" y="2" width="3" height="16" rx="1"/>
+                            <polygon points="17,2 5,10 17,18"/>
+                        </svg>
+                    </button>
+                    <button class="play-btn" id="play-btn" onclick="togglePlay()">
+                        <svg id="icon-play" width="20" height="20" viewBox="0 0 20 20" fill="white" xmlns="http://www.w3.org/2000/svg">
+                            <polygon points="4,2 18,10 4,18"/>
+                        </svg>
+                        <svg id="icon-pause" width="20" height="20" viewBox="0 0 20 20" fill="white" xmlns="http://www.w3.org/2000/svg" style="display:none;">
+                            <rect x="3" y="2" width="5" height="16" rx="1"/>
+                            <rect x="12" y="2" width="5" height="16" rx="1"/>
+                        </svg>
+                    </button>
+                    <button onclick="nextTrack()" title="Вперёд">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="white" xmlns="http://www.w3.org/2000/svg">
+                            <polygon points="3,2 15,10 3,18"/>
+                            <rect x="16" y="2" width="3" height="16" rx="1"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="progress-wrap progress-wrap--mobile" id="progress-wrap-mobile">
+                <span class="time-label" id="time-cur-m">0:00</span>
+                <div class="progress-bar" id="progress-bar-mobile" onclick="seekTrack(event, true)">
+                    <div class="progress-fill" id="progress-fill-mobile"></div>
+                </div>
+                <span class="time-label" id="time-dur-m">0:00</span>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        <span class="heart">❤</span> <span>Made by Danurry 2026</span>
+    </div>
+
+    <audio id="audio-player"></audio>
+
+    <script>
+        const vid   = document.getElementById('bg-video');
+        const bgImg = document.getElementById('bg-img');
+        vid.addEventListener('error',   () => { vid.style.display = 'none'; bgImg.style.display = 'block'; });
+        vid.addEventListener('emptied', () => { bgImg.style.display = 'block'; });
+
+        const playlist = [
+            { title: "Circus Hop",     artist: "YonKaGor", src: "assets/track1.mp3", cover: "assets/track1.png" },
+            { title: "You'll Be Gone", artist: "YonKaGor", src: "assets/track2.mp3", cover: "assets/track2.png" },
+            { title: "Finale",         artist: "Toby Fox",  src: "assets/track3.mp3", cover: "assets/track3.png" }
+        ];
+
+        let currentTrack = 0;
+        let isPlaying    = false;
+        const audio      = document.getElementById('audio-player');
+
+        function setPlayIcon(playing) {
+            document.getElementById('icon-play').style.display  = playing ? 'none' : '';
+            document.getElementById('icon-pause').style.display = playing ? ''     : 'none';
+        }
+
+        function loadTrack(idx) {
+            const t = playlist[idx];
+            document.getElementById('player-title').textContent  = t.title;
+            document.getElementById('player-artist').textContent = t.artist;
+            document.getElementById('player-cover').src          = t.cover;
+            audio.src = t.src;
+            audio.load();
+        }
+
+        function togglePlay() {
+            if (isPlaying) { audio.pause(); }
+            else           { audio.play().catch(() => {}); }
+        }
+
+        audio.addEventListener('play',   () => { isPlaying = true;  setPlayIcon(true);  });
+        audio.addEventListener('pause',  () => { isPlaying = false; setPlayIcon(false); });
+        audio.addEventListener('ended',  () => nextTrack(true));
+
+        audio.addEventListener('timeupdate', () => {
+            if (!audio.duration) return;
+            const pct = (audio.currentTime / audio.duration) * 100;
+            document.getElementById('progress-fill').style.width        = pct + '%';
+            document.getElementById('progress-fill-mobile').style.width = pct + '%';
+            const cur = fmt(audio.currentTime);
+            const dur = fmt(audio.duration);
+            document.getElementById('time-cur').textContent   = cur;
+            document.getElementById('time-dur').textContent   = dur;
+            document.getElementById('time-cur-m').textContent = cur;
+            document.getElementById('time-dur-m').textContent = dur;
+        });
+
+        audio.addEventListener('loadedmetadata', () => {
+            const dur = fmt(audio.duration);
+            document.getElementById('time-dur').textContent   = dur;
+            document.getElementById('time-dur-m').textContent = dur;
+        });
+
+        function fmt(s) {
+            const m   = Math.floor(s / 60);
+            const sec = Math.floor(s % 60);
+            return m + ':' + String(sec).padStart(2, '0');
+        }
+
+        function prevTrack() {
+            currentTrack = (currentTrack - 1 + playlist.length) % playlist.length;
+            loadTrack(currentTrack);
+            if (isPlaying) audio.play().catch(() => {});
+        }
+
+        function nextTrack(auto) {
+            currentTrack = (currentTrack + 1) % playlist.length;
+            loadTrack(currentTrack);
+            if (isPlaying || auto) audio.play().catch(() => {});
+        }
+
+        function seekTrack(e, isMobile) {
+            if (!audio.duration) return;
+            const barId = isMobile ? 'progress-bar-mobile' : 'progress-bar';
+            const bar   = document.getElementById(barId);
+            const ratio = e.offsetX / bar.offsetWidth;
+            audio.currentTime = ratio * audio.duration;
+        }
+
+        loadTrack(0);
+    </script>
+</body>
+</html>
